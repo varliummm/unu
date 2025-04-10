@@ -1,0 +1,148 @@
+
+import java.util.*;
+
+
+class Actividad {
+    String nombre;       // Nombre de la actividad
+    int prioridad;       // Prioridad de la actividad (1 a 10)
+    int duracion;        // Duración de la actividad en minutos
+    String tipo;         // Tipo de actividad (Estudio, Descanso, Ocio, etc.)
+
+    public Actividad(String nombre, int prioridad, int duracion, String tipo) {
+        this.nombre = nombre;
+        this.prioridad = prioridad;
+        this.duracion = duracion;
+        this.tipo = tipo;
+    }
+
+    // Método que imprime la información de la actividad en consola
+    public void mostrar() {
+        System.out.println("Nombre: " + nombre);
+        System.out.println("Prioridad: " + prioridad);
+        System.out.println("Duración: " + duracion + " min");
+        System.out.println("Tipo: " + tipo);
+        System.out.println("----------------------");
+    }
+}
+
+public class TransFormaApp {
+    static Scanner scanner = new Scanner(System.in); // Scanner para leer datos del usuario
+    static ArrayList<Actividad> listaActividades = new ArrayList<>(); // Lista de actividades
+
+    
+    public static void main(String[] args) {
+        int opcion;
+
+        do {
+            // Menú principal de opciones
+            System.out.println("\n------ TRANS-FORMA ------");
+            System.out.println("1. Agregar actividad");
+            System.out.println("2. Ver actividades");
+            System.out.println("3. Ordenar actividades por prioridad (MergeSort)");
+            System.out.println("4. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            opcion = scanner.nextInt();     // Leemos opción del usuario
+            scanner.nextLine();             // Limpiamos el buffer del scanner
+
+            // Ejecutamos acción según la opción ingresada
+            switch (opcion) {
+                case 1 -> agregarActividad();         // Agrega una actividad nueva
+                case 2 -> verActividades();           // Muestra la lista de actividades
+                case 3 -> ordenarActividades();       // Ordena las actividades por prioridad
+                case 4 -> System.out.println("¡Gracias por usar TRANS-FORMA!");
+                default -> System.out.println("Opción no válida.");
+            }
+        } while (opcion != 4); // El ciclo se repite hasta que el usuario decida salir
+    }
+
+    // Método que permite al usuario registrar una nueva actividad
+    static void agregarActividad() {
+        System.out.print("Nombre de la actividad: ");
+        String nombre = scanner.nextLine(); // Leemos el nombre de la actividad
+
+        System.out.print("Prioridad (1-10): ");
+        int prioridad = scanner.nextInt();  // Leemos la prioridad
+
+        System.out.print("Duración en minutos: ");
+        int duracion = scanner.nextInt();   // Leemos la duración
+        scanner.nextLine();                 // Limpiamos el buffer
+
+        System.out.print("Tipo (Estudio, descanso, ocio, etc): ");
+        String tipo = scanner.nextLine();   // Leemos el tipo de actividad
+
+        // Creamos un objeto Actividad con los datos ingresados
+        Actividad nueva = new Actividad(nombre, prioridad, duracion, tipo);
+
+        // Agregamos la actividad a la lista
+        listaActividades.add(nueva);
+
+        System.out.println(" Actividad agregada con éxito.");
+    }
+
+    // Método que muestra en pantalla todas las actividades registradas
+    static void verActividades() {
+        if (listaActividades.isEmpty()) {
+            System.out.println("⚠ No hay actividades registradas.");
+        } else {
+            System.out.println("\n Lista de Actividades:");
+            for (Actividad act : listaActividades) {
+                act.mostrar(); // Mostramos cada actividad
+            }
+        }
+    }
+
+    // Método que ordena las actividades usando el algoritmo MergeSort
+    static void ordenarActividades() {
+        if (listaActividades.size() < 2) {
+            System.out.println("⚠ Debes tener al menos 2 actividades para ordenar.");
+            return;
+        }
+
+        listaActividades = mergeSort(listaActividades); // Llamamos a MergeSort
+        System.out.println("Actividades ordenadas por prioridad (mayor a menor).");
+    }
+
+    // Implementación del algoritmo Merge Sort para ordenar la lista de actividades
+    static ArrayList<Actividad> mergeSort(ArrayList<Actividad> lista) {
+        // Si la lista tiene 1 o 0 elementos, ya está ordenada
+        if (lista.size() <= 1) return lista;
+
+        // Dividimos la lista en dos mitades
+        int medio = lista.size() / 2;
+        ArrayList<Actividad> izquierda = new ArrayList<>(lista.subList(0, medio));
+        ArrayList<Actividad> derecha = new ArrayList<>(lista.subList(medio, lista.size()));
+
+        // Llamada recursiva para ordenar ambas mitades
+        izquierda = mergeSort(izquierda);
+        derecha = mergeSort(derecha);
+
+        // Combinamos ambas mitades ordenadas
+        return merge(izquierda, derecha);
+    }
+
+    // Método que fusiona dos listas ordenadas en una sola lista ordenada
+    static ArrayList<Actividad> merge(ArrayList<Actividad> izq, ArrayList<Actividad> der) {
+        ArrayList<Actividad> resultado = new ArrayList<>(); // Lista resultante ordenada
+        int i = 0, j = 0; // Índices para recorrer cada mitad
+
+        // Mientras haya elementos en ambas listas, comparamos prioridades
+        while (i < izq.size() && j < der.size()) {
+            if (izq.get(i).prioridad >= der.get(j).prioridad) {
+                resultado.add(izq.get(i));
+                i++;
+            } else {
+                resultado.add(der.get(j));
+                j++;
+            }
+        }
+
+        // Agregamos los elementos restantes de la lista izquierda (si hay)
+        while (i < izq.size()) resultado.add(izq.get(i++));
+
+        // Agregamos los elementos restantes de la lista derecha (si hay)
+        while (j < der.size()) resultado.add(der.get(j++));
+
+        return resultado; // Retornamos la lista ordenada final
+    }
+}
